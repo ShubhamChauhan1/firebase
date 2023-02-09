@@ -1,23 +1,38 @@
-import logo from './logo.svg';
+
+import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
+import Home from './components/home/Home';
+import Login from './components/Login/Login';
+import Signup from './components/Signup/Signup';
+import { auth } from './firebase';
+import Todo from "./Todo/Todo"
 
 function App() {
+  const [username,setUserName] = useState("")
+  useEffect(()=>{
+    onAuthStateChanged(auth,(user)=>{
+      if(user){
+        setUserName(user.email.substr(0,user.email.indexOf("@")))
+      }
+      else {
+        setUserName("")
+      }
+    })
+  },[])
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/todo" element={<Todo name={username}/>}/>
+          <Route path='/login' element = {<Login/>}/>
+          <Route path='/signup' element = {<Signup/>}/>
+          <Route path='/' element={<Login/>}/>
+        </Routes>
+      </BrowserRouter>
+      
     </div>
   );
 }
